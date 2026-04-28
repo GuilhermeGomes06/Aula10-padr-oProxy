@@ -1,0 +1,39 @@
+from abc import ABC, abstractmethod
+
+# Interface
+class Servico(ABC):
+    @abstractmethod
+    def operacao(self):
+        pass
+
+
+# Objeto real
+class ServicoReal(Servico):
+    def operacao(self):
+        return "Acesso ao serviço liberado!"
+
+
+# Proxy (controle de tentativas)
+class ProxyControleAcesso(Servico):
+    def __init__(self):
+        self.servico_real = ServicoReal()
+        self.tentativas = 0
+        self.limite = 3
+
+    def operacao(self):
+        if self.tentativas >= self.limite:
+            return "Acesso bloqueado! Limite de tentativas atingido."
+
+        self.tentativas += 1
+        print(f"Tentativa {self.tentativas}")
+
+        return self.servico_real.operacao()
+
+
+# Uso
+proxy = ProxyControleAcesso()
+
+print(proxy.operacao())
+print(proxy.operacao())
+print(proxy.operacao())
+print(proxy.operacao())  # aqui bloqueia
